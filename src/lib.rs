@@ -82,17 +82,17 @@ use core::convert::Infallible;
 /// Macro for printing to the DCC
 #[macro_export]
 macro_rules! dprint {
-    ($($tt:tt)*) => {
+    ($($tt:tt)*) => { {
         ufmt::uwrite!(&mut $crate::Writer, $($tt)*).ok();
-    };
+    }};
 }
 
 /// Macro for printing to the DCC, with a newline.
 #[macro_export]
 macro_rules! dprintln {
-    ($($tt:tt)*) => {
+    ($($tt:tt)*) => {{
         ufmt::uwriteln!(&mut $crate::Writer, $($tt)*).ok();
-    };
+    }};
 }
 
 /// Proxy struct that implements the `ufmt::uWrite` trait
