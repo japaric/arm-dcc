@@ -9,6 +9,7 @@ edition = "2018"
 keywords = ["ARM", "DCC"]
 license = "MIT OR Apache-2.0"
 name = "arm-dcc"
+publish = false
 repository = "https://github.com/rust-embedded/arm-dcc"
 version = "0.1.0"
 
@@ -18,3 +19,6 @@ nop = []
 
 [workspace]
 members = ["panic"]
+
+[dependencies]
+ufmt = "0.1.0-beta.3"

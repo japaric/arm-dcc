@@ -77,40 +77,33 @@
 #![deny(warnings)]
 #![no_std]
 
-use core::fmt;
+use core::convert::Infallible;
 
 /// Macro for printing to the DCC
 #[macro_export]
 macro_rules! dprint {
-    ($s:expr) => {
-        $crate::write_str($s)
-    };
     ($($tt:tt)*) => {
-        $crate::write_fmt(format_args!($($tt)*))
+        ufmt::uwrite!(&mut $crate::Writer, $($tt)*).ok();
     };
 }
 
 /// Macro for printing to the DCC, with a newline.
 #[macro_export]
 macro_rules! dprintln {
-    () => {
-        $crate::write_str("\n")
-    };
-    ($s:expr) => {
-        $crate::write_str(concat!($s, "\n"))
-    };
-    ($s:expr, $($tt:tt)*) => {
-        $crate::write_fmt(format_args!(concat!($s, "\n"), $($tt)*))
+    ($($tt:tt)*) => {
+        ufmt::uwriteln!(&mut $crate::Writer, $($tt)*).ok();
     };
 }
 
-/// Proxy struct that implements the `fmt::Write`
+/// Proxy struct that implements the `ufmt::uWrite` trait
 ///
-/// The main use case for this is using the `write!` macro
+/// The main use case for this is using the `uwrite!` macro
 pub struct Writer;
 
-impl fmt::Write for Writer {
-    fn write_str(&mut self, s: &str) -> Result<(), fmt::Error> {
+impl ufmt::uWrite for Writer {
+    type Error = Infallible;
+
+    fn write_str(&mut self, s: &str) -> Result<(), Infallible> {
         write_str(s);
         Ok(())
     }
@@ -159,13 +152,6 @@ pub fn write(word: u32) {
 /// NOTE: each byte will be word-extended before being `write`-n to the DCC
 pub fn write_all(bytes: &[u8]) {
     bytes.iter().for_each(|byte| write(u32::from(*byte)))
-}
-
-#[doc(hidden)]
-pub fn write_fmt(args: fmt::Arguments) {
-    use core::fmt::Write;
-
-    Writer.write_fmt(args).ok();
 }
 
 /// Writes the string to the DCC
